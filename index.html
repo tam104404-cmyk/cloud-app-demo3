@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý Sinh viên - Cloud App</title>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    input { margin: 5px; padding: 5px; }
+    button { padding: 5px 10px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
+  </style>
+</head>
+<body>
+  <h2>📘 Ứng dụng Quản lý Sinh viên (Deploy trên Cloud)</h2>
+
+  <div>
+    <input id="name" placeholder="Tên sinh viên">
+    <input id="age" placeholder="Tuổi">
+    <button onclick="addStudent()">Thêm</button>
+  </div>
+
+  <table id="studentTable">
+    <tr><th>ID</th><th>Tên</th><th>Tuổi</th></tr>
+  </table>
+
+  <script>
+    async function loadStudents() {
+      const res = await fetch('/students');
+      const data = await res.json();
+      const table = document.getElementById('studentTable');
+      table.innerHTML = '<tr><th>ID</th><th>Tên</th><th>Tuổi</th></tr>';
+      data.forEach(s => {
+        table.innerHTML += `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.age}</td></tr>`;
+      });
+    }
+
+    async function addStudent() {
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+      if (!name || !age) return alert('Nhập đầy đủ!');
+      const res = await fetch('/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: Date.now(), name, age })
+      });
+      await res.json();
+      loadStudents();
+    }
+
+    loadStudents();
+  </script>
+</body>
+</html>
